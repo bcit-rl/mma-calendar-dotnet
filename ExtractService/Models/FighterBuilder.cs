@@ -14,31 +14,71 @@ namespace ExtractService.Models
 {
     public class FighterBuilder
     {
-        private readonly HttpClient client = DBFiller.client; 
-        
-        public async Task<Fighter> getFighter(string url){
+        private readonly HttpClient client = DBFiller.client;
+        private readonly CardContext _context;
+        public FighterBuilder(CardContext context)
+        {
+            _context = context;
+        }   
+
+        private void fillFighterStats(ref Fighter fighter, string responseBody){
+                JObject? fighterRecord = JObject.Parse(responseBody);
+                var items = fighterRecord["items"];
+                if(items != null && items.First()["stats"] != null){
+                    foreach (JToken item in items.First()["stats"]!){
+                        switch((string?) item["name"])
+                        {
+                            case "wins":
+                                fighter.Wins = (int?) item["value"];
+                                break;
+                            case "losses":
+                                fighter.Losses = (int?) item["value"];
+                                break;
+                            case "draws":
+                                fighter.Draws = (int?) item["value"];
+                                break;
+                            case "noContests":
+                                fighter.NoContests = (int?) item["value"];
+                                break;
+                            default:
+                                break;
+                        }
+
+                    }
+                }
+        }
+
+        public async Task<Fighter> getFighter(string url)
+        {
+            Fighter athlete = new Fighter();
             try
             {
                 var responseBody = await client.GetStringAsync(url);
-                var json = JObject.Parse(responseBody);
-                Fighter athlete = new Fighter();
-                athlete.FirstName = json["athlete"]["firstName"].ToString();
-                athlete.LastName = json["athlete"]["lastName"].ToString();
-                athlete.NickName = json["athlete"]["weightClass"].ToString();
-                athlete.Weight = json["athlete"]["firstName"].ToString();
-                athlete.Height = json["athlete"]["lastName"].ToString();
-                athlete.Age = json["athlete"]["weightClass"].ToString();
-                athlete.Gender = json["athlete"]["firstName"].ToString();
-                athlete.Citizenship = json["athlete"]["lastName"].ToString();
-                athlete.Headshot = json["athlete"]["weightClass"].ToString();
-                athlete.Wins = json["athlete"]["firstName"].ToString();
-                athlete.Losses = json["athlete"]["lastName"].ToString();
-                athlete.Draws = json["athlete"]["weightClass"].ToString();
-                athlete.NoContests = json["athlete"]["firstName"].ToString();
-                athlete.LeftStance = json["athlete"]["lastName"].ToString();
-                athlete.RightStance = json["athlete"]["weightClass"].ToString();
+                var fighterInfo = JObject.Parse(responseBody);
 
-
+                if (fighterInfo["id"] != null)
+                {
+                    athlete.FighterId = (int) fighterInfo["id"]!;
+                }
+                
+                athlete.FirstName = (string?)fighterInfo["firstName"];
+                athlete.LastName = (string?)fighterInfo["lastName"];
+                athlete.NickName = (string?)fighterInfo["nickname"];
+                athlete.Weight = (int?)fighterInfo["weight"];
+                athlete.Height = (int?)fighterInfo["height"];
+                athlete.Age = (int?)fighterInfo["age"];
+                athlete.Gender = (string?)fighterInfo["gender"];
+                athlete.Citizenship = (string?)fighterInfo["citizenship"];
+                if (fighterInfo["headshot"] is not null)
+                {
+                    athlete.Headshot = (string?) fighterInfo["headshot"]!["href"];
+                }
+                
+                if (fighterInfo is not null  && fighterInfo["records"] is not null && fighterInfo["records"]!["$ref"] is not null )
+                {
+                    string recordResponse = await client.GetStringAsync((string) fighterInfo["records"]!["$ref"]!);
+                    fillFighterStats(ref athlete, recordResponse);
+                }
             }
             catch (HttpRequestException e)
             {
@@ -46,8 +86,25 @@ namespace ExtractService.Models
                 Console.WriteLine("Message :{0} ", e.Message);
             }
 
-            return new Fighter();
+            return athlete;
         }
-        
+
+        public async Task<Fighter> checkFighter(string url)
+        {
+            Fighter new_fighter = await getFighter(url);
+            //Check if fighter exits and updates or add based off of that information
+            if (await _context.Fighters.FindAsync(new_fighter.FighterId) is Fighter fighter)
+            {   
+                _context.Entry(fighter).CurrentValues.SetValues(new_fighter);
+            }
+            else
+            {
+                _context.Fighters.Add(new_fighter);
+            }
+            await _context.SaveChangesAsync();
+
+            return new_fighter;
+        }
+
     }
 }

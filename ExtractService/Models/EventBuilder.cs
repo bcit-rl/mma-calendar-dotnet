@@ -15,7 +15,89 @@ namespace ExtractService.Models
     public class EventBuilder
     {
         private readonly HttpClient client = DBFiller.client; 
+        private readonly CardContext _context;
+        private readonly VenueBuilder _venueBuilder;
 
+        public EventBuilder(CardContext context)
+        {
+            _context = context;
+            _venueBuilder = new VenueBuilder(context);
+        }
+        public async Task<Event> getEvent(string url){
+            Event new_event = new Event();
+            try
+            {
+                var responseBody = await client.GetStringAsync(url);
+                var eventInfo = JObject.Parse(responseBody);
+                if (eventInfo["id"] != null)
+                {
+                    new_event.EventId = (int) eventInfo["id"]!;
+                }
+                new_event.EventName = (string?)eventInfo["name"];
+                new_event.ShortName = (string?)eventInfo["shortName"];
+                if (eventInfo["date"] != null){
+                    new_event.EventDate = DateTime.Parse((string) eventInfo["date"], null, System.Globalization.DateTimeStyles.RoundtripKind);
+                }
+                if (eventInfo["venues"] != null){
+                    Venue new_venue = await _venueBuilder.checkVenue((string?)eventInfo["venues"][0]["$ref"]);
+                    new_event.EventLocationId = new_venue.VenueId;
+                    //new_event.EventLocation = await _venueBuilder.checkVenue((string?)eventInfo["venues"][0]["$ref"]);
+                }  
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", e.Message);
+                return null;
+            }
+
+            return new_event;
+        } 
+
+        public async Task<Event> createEvent(string url){
+            Event new_event = await getEvent(url);
+
+            if (await _context.Events.FindAsync(new_event.EventId) is Event event1)
+            {   
+                _context.Entry(event1).CurrentValues.SetValues(new_event);
+            }
+            else
+            {
+                _context.Events.Add(new_event);
+            }
+            await _context.SaveChangesAsync();
+            return new_event;
+        }
+
+        /**
+        * This method will be used to get the fight urls from the event url
+        */
+        public async Task<List<string>> getFightURLS(string url){
+            List<string> fightURLS = new List<string>();
+            try
+            {
+                var responseBody = await client.GetStringAsync(url);
+                var eventInfo = JObject.Parse(responseBody);
+
+                if (eventInfo["competitions"] != null){
+                    foreach (JToken competition in eventInfo["competitions"]!){
+                        if (competition["$ref"] != null){
+                            fightURLS.Add((string)competition["$ref"]!);
+                        }
+                    }
+                }
+
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", e.Message);
+                return null;
+            }
+
+            return fightURLS;
+
+        }
         
     }
 }

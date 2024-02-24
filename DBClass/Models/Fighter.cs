@@ -22,8 +22,16 @@ namespace DBClass.Models
         public int? Wins { get; set; }
         public int? Losses { get; set; }
         public int? Draws { get; set; }
-        public int?  NoContests { get; set; }
+        public int? NoContests { get; set; }
         public string? LeftStance { get; set; }
         public string? RightStance { get; set; }
+
+        public override string ToString()
+        {
+            return $"FighterId: {FighterId}\nFirstName: {FirstName}\nLastName: {LastName}\nNickName: {NickName}\n" +
+                   $"Weight: {Weight}\nHeight: {Height}\nAge: {Age}\nGender: {Gender}\nCitizenship: {Citizenship}\n" +
+                   $"Headshot: {Headshot}\nWins: {Wins}\nLosses: {Losses}\nDraws: {Draws}\nNoContests: {NoContests}\n" +
+                   $"LeftStance: {LeftStance}\nRightStance: {RightStance}";
+        }
     }
 }
