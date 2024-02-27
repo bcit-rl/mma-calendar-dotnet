@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExtractService.Data.Migrations
 {
     [DbContext(typeof(CardContext))]
-    [Migration("20240224040159_M1")]
+    [Migration("20240224083024_M1")]
     partial class M1
     {
         /// <inheritdoc />

@@ -1,9 +1,32 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using CardContextFactory;
 
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<CreateDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CreateDbContext") ?? throw new InvalidOperationException("Connection string 'CreateDbContext' not found.")));
+
+builder.Services.AddControllers();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var connection_string = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connection_string))
+{
+    throw new Exception("Connection string not found");
+}
+builder.Services.AddDbContext<CardContext>(
+    options => options.UseMySQL(connection_string)
+);
+
+builder.Services.AddCors(o => o.AddPolicy("HealthPolicy", builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+}));
 
 var app = builder.Build();
 
@@ -23,7 +46,7 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
@@ -35,6 +58,8 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+app.MapControllers();
 
 app.Run();
 
