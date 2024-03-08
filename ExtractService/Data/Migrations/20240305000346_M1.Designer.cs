@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExtractService.Data.Migrations
 {
     [DbContext(typeof(CardContext))]
-    [Migration("20240224083024_M1")]
+    [Migration("20240305000346_M1")]
     partial class M1
     {
         /// <inheritdoc />
@@ -31,18 +31,18 @@ namespace ExtractService.Data.Migrations
                     b.Property<DateTime?>("EventDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("EventLocationId")
-                        .HasColumnType("int");
-
                     b.Property<string>("EventName")
                         .HasColumnType("longtext");
 
                     b.Property<string>("ShortName")
                         .HasColumnType("longtext");
 
+                    b.Property<int?>("VenueId")
+                        .HasColumnType("int");
+
                     b.HasKey("EventId");
 
-                    b.HasIndex("EventLocationId");
+                    b.HasIndex("VenueId");
 
                     b.ToTable("Events", (string)null);
                 });
@@ -83,21 +83,12 @@ namespace ExtractService.Data.Migrations
                     b.Property<int?>("Round")
                         .HasColumnType("int");
 
-                    b.Property<int?>("VenueId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Winner")
                         .HasColumnType("longtext");
 
                     b.HasKey("FightId");
 
                     b.HasIndex("EventId");
-
-                    b.HasIndex("FighterAId");
-
-                    b.HasIndex("FighterBId");
-
-                    b.HasIndex("VenueId");
 
                     b.ToTable("Fights", (string)null);
                 });
@@ -115,6 +106,9 @@ namespace ExtractService.Data.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<int?>("Draws")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FightId")
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
@@ -155,6 +149,8 @@ namespace ExtractService.Data.Migrations
 
                     b.HasKey("FighterId");
 
+                    b.HasIndex("FightId");
+
                     b.ToTable("Fighters", (string)null);
                 });
 
@@ -186,38 +182,42 @@ namespace ExtractService.Data.Migrations
 
             modelBuilder.Entity("DBClass.Models.Event", b =>
                 {
-                    b.HasOne("DBClass.Models.Venue", "EventLocation")
-                        .WithMany()
-                        .HasForeignKey("EventLocationId");
+                    b.HasOne("DBClass.Models.Venue", "Venue")
+                        .WithMany("Events")
+                        .HasForeignKey("VenueId");
 
-                    b.Navigation("EventLocation");
+                    b.Navigation("Venue");
                 });
 
             modelBuilder.Entity("DBClass.Models.Fight", b =>
                 {
                     b.HasOne("DBClass.Models.Event", "Event")
-                        .WithMany()
+                        .WithMany("Fights")
                         .HasForeignKey("EventId");
 
-                    b.HasOne("DBClass.Models.Fighter", "FighterA")
-                        .WithMany()
-                        .HasForeignKey("FighterAId");
-
-                    b.HasOne("DBClass.Models.Fighter", "FighterB")
-                        .WithMany()
-                        .HasForeignKey("FighterBId");
-
-                    b.HasOne("DBClass.Models.Venue", "Venue")
-                        .WithMany()
-                        .HasForeignKey("VenueId");
-
                     b.Navigation("Event");
+                });
 
-                    b.Navigation("FighterA");
+            modelBuilder.Entity("DBClass.Models.Fighter", b =>
+                {
+                    b.HasOne("DBClass.Models.Fight", null)
+                        .WithMany("Fighters")
+                        .HasForeignKey("FightId");
+                });
 
-                    b.Navigation("FighterB");
+            modelBuilder.Entity("DBClass.Models.Event", b =>
+                {
+                    b.Navigation("Fights");
+                });
 
-                    b.Navigation("Venue");
+            modelBuilder.Entity("DBClass.Models.Fight", b =>
+                {
+                    b.Navigation("Fighters");
+                });
+
+            modelBuilder.Entity("DBClass.Models.Venue", b =>
+                {
+                    b.Navigation("Events");
                 });
 #pragma warning restore 612, 618
         }

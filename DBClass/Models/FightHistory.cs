@@ -11,7 +11,6 @@ namespace DBClass.Models
     {
         [Key]
         public int id { get; set; } 
-
         
         public required Fighter FighterId { get; set; }
          

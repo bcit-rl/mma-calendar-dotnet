@@ -12,8 +12,6 @@ namespace DBClass.Models
         {
         }
         
-        // public DbSet<Event> Events { get; set; }
-        // public DbSet<Fight> Fights { get; set; }
         public DbSet<Venue> Venues { get; set; }
         public DbSet<Fighter> Fighters { get; set; }
 
@@ -21,6 +19,26 @@ namespace DBClass.Models
 
         public DbSet<Fight> Fights { get; set; }
         
+
+        public static CardContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<CardContext>();
+            optionsBuilder.UseMySQL("Server=localhost;Port=3333;User ID=root;Password=secret;Database=mma_calendar");
+
+            return new CardContext(optionsBuilder.Options);
+        }
+
+        /*
+         * Hacky way to get the card context when trying to create a controller using aspnet code generator 
+         */
+        public static CardContext CreateDbContextController(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<CardContext>();
+            optionsBuilder.UseSqlServer("Server=localhost;Port=3333;User ID=root;Password=secret;Database=mma_calendar");
+
+            return new CardContext(optionsBuilder.Options);
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Fighter>()

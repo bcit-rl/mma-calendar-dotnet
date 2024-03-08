@@ -16,34 +16,6 @@ namespace ExtractService.Data.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Fighters",
-                columns: table => new
-                {
-                    FighterId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    FirstName = table.Column<string>(type: "longtext", nullable: true),
-                    LastName = table.Column<string>(type: "longtext", nullable: true),
-                    NickName = table.Column<string>(type: "longtext", nullable: true),
-                    Weight = table.Column<int>(type: "int", nullable: true),
-                    Height = table.Column<int>(type: "int", nullable: true),
-                    Age = table.Column<int>(type: "int", nullable: true),
-                    Gender = table.Column<string>(type: "longtext", nullable: true),
-                    Citizenship = table.Column<string>(type: "longtext", nullable: true),
-                    Headshot = table.Column<string>(type: "longtext", nullable: true),
-                    Wins = table.Column<int>(type: "int", nullable: true),
-                    Losses = table.Column<int>(type: "int", nullable: true),
-                    Draws = table.Column<int>(type: "int", nullable: true),
-                    NoContests = table.Column<int>(type: "int", nullable: true),
-                    LeftStance = table.Column<string>(type: "longtext", nullable: true),
-                    RightStance = table.Column<string>(type: "longtext", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Fighters", x => x.FighterId);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Venues",
                 columns: table => new
                 {
@@ -70,14 +42,14 @@ namespace ExtractService.Data.Migrations
                     EventName = table.Column<string>(type: "longtext", nullable: true),
                     ShortName = table.Column<string>(type: "longtext", nullable: true),
                     EventDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    EventLocationId = table.Column<int>(type: "int", nullable: true)
+                    VenueId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Events", x => x.EventId);
                     table.ForeignKey(
-                        name: "FK_Events_Venues_EventLocationId",
-                        column: x => x.EventLocationId,
+                        name: "FK_Events_Venues_VenueId",
+                        column: x => x.VenueId,
                         principalTable: "Venues",
                         principalColumn: "VenueId");
                 })
@@ -97,10 +69,9 @@ namespace ExtractService.Data.Migrations
                     MethodDescription = table.Column<string>(type: "longtext", nullable: true),
                     CardSegment = table.Column<string>(type: "longtext", nullable: true),
                     Winner = table.Column<string>(type: "longtext", nullable: true),
-                    VenueId = table.Column<int>(type: "int", nullable: true),
+                    EventId = table.Column<int>(type: "int", nullable: true),
                     FighterAId = table.Column<int>(type: "int", nullable: true),
-                    FighterBId = table.Column<int>(type: "int", nullable: true),
-                    EventId = table.Column<int>(type: "int", nullable: true)
+                    FighterBId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -110,61 +81,70 @@ namespace ExtractService.Data.Migrations
                         column: x => x.EventId,
                         principalTable: "Events",
                         principalColumn: "EventId");
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Fighters",
+                columns: table => new
+                {
+                    FighterId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    FirstName = table.Column<string>(type: "longtext", nullable: true),
+                    LastName = table.Column<string>(type: "longtext", nullable: true),
+                    NickName = table.Column<string>(type: "longtext", nullable: true),
+                    Weight = table.Column<int>(type: "int", nullable: true),
+                    Height = table.Column<int>(type: "int", nullable: true),
+                    Age = table.Column<int>(type: "int", nullable: true),
+                    Gender = table.Column<string>(type: "longtext", nullable: true),
+                    Citizenship = table.Column<string>(type: "longtext", nullable: true),
+                    Headshot = table.Column<string>(type: "longtext", nullable: true),
+                    Wins = table.Column<int>(type: "int", nullable: true),
+                    Losses = table.Column<int>(type: "int", nullable: true),
+                    Draws = table.Column<int>(type: "int", nullable: true),
+                    NoContests = table.Column<int>(type: "int", nullable: true),
+                    LeftStance = table.Column<string>(type: "longtext", nullable: true),
+                    RightStance = table.Column<string>(type: "longtext", nullable: true),
+                    FightId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Fighters", x => x.FighterId);
                     table.ForeignKey(
-                        name: "FK_Fights_Fighters_FighterAId",
-                        column: x => x.FighterAId,
-                        principalTable: "Fighters",
-                        principalColumn: "FighterId");
-                    table.ForeignKey(
-                        name: "FK_Fights_Fighters_FighterBId",
-                        column: x => x.FighterBId,
-                        principalTable: "Fighters",
-                        principalColumn: "FighterId");
-                    table.ForeignKey(
-                        name: "FK_Fights_Venues_VenueId",
-                        column: x => x.VenueId,
-                        principalTable: "Venues",
-                        principalColumn: "VenueId");
+                        name: "FK_Fighters_Fights_FightId",
+                        column: x => x.FightId,
+                        principalTable: "Fights",
+                        principalColumn: "FightId");
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Events_EventLocationId",
+                name: "IX_Events_VenueId",
                 table: "Events",
-                column: "EventLocationId");
+                column: "VenueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Fighters_FightId",
+                table: "Fighters",
+                column: "FightId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Fights_EventId",
                 table: "Fights",
                 column: "EventId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Fights_FighterAId",
-                table: "Fights",
-                column: "FighterAId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Fights_FighterBId",
-                table: "Fights",
-                column: "FighterBId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Fights_VenueId",
-                table: "Fights",
-                column: "VenueId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Fighters");
+
+            migrationBuilder.DropTable(
                 name: "Fights");
 
             migrationBuilder.DropTable(
                 name: "Events");
-
-            migrationBuilder.DropTable(
-                name: "Fighters");
 
             migrationBuilder.DropTable(
                 name: "Venues");

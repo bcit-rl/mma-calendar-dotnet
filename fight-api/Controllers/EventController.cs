@@ -25,7 +25,13 @@ namespace fight_api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Event>>> GetEvent()
         {
-            return await _context.Events.ToListAsync();
+            List<Event> events = await _context.Events.ToListAsync();
+            foreach (var e in events)
+            {
+                fillEventData(e);
+            }
+
+            return events;
         }
 
         // GET: api/Event/5
@@ -103,6 +109,39 @@ namespace fight_api.Controllers
         private bool EventExists(int id)
         {
             return _context.Events.Any(e => e.EventId == id);
+        }
+
+
+        /*
+        * Because of how models don't have all references filled
+        * due to navigation issues, we need to fill them out 
+        * manually. This is a helper function to do that.
+        */
+        private void fillEventData(Event unfilled_event)
+        {
+            // Fill out the venue
+            unfilled_event.Venue = _context.Venues.Find(unfilled_event.VenueId);
+            if (unfilled_event.Venue != null)
+            {
+                unfilled_event.Venue.Events = null;
+            }
+            
+            // Fill out the fight
+            fillFightData(unfilled_event);
+
+        }
+
+        private void fillFightData(Event event_no_fights)
+        {
+            var stored_fights = _context.Fights.Where(f => f.EventId == event_no_fights.EventId).ToList();
+            event_no_fights.Fights = stored_fights;
+
+            // event_no_fights.Fights.Clear();
+            // foreach (Fight f in stored_fights)
+            // {
+            //     event_no_fights.Fights.Add(f);
+            // }
+
         }
     }
 }

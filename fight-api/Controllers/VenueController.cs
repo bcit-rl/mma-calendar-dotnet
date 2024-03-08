@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CardContextFactory;
 using DBClass.Models;
+using NuGet.Packaging;
 
 namespace fight_api.Controllers
 {
@@ -25,7 +26,12 @@ namespace fight_api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Venue>>> GetVenue()
         {
-            return await _context.Venues.ToListAsync();
+            List<Venue> venues = await _context.Venues.ToListAsync();
+            foreach (var v in venues)
+            {
+                AddEventsToVenue(v);
+            }
+            return venues;
         }
 
         // GET: api/Venue/5
@@ -103,6 +109,13 @@ namespace fight_api.Controllers
         private bool VenueExists(int id)
         {
             return _context.Venues.Any(e => e.VenueId == id);
+        }
+
+        private void AddEventsToVenue(Venue venue)
+        {
+            var stored_events = _context.Events.Where(e => e.VenueId == venue.VenueId).ToList();
+            venue.Events.Clear();
+            venue.Events.AddRange(stored_events);
         }
     }
 }

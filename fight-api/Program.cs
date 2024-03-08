@@ -1,16 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CardContextFactory;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<CreateDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("CreateDbContext") ?? throw new InvalidOperationException("Connection string 'CreateDbContext' not found.")));
+builder.Services.AddDbContext<CreateDbContextController>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CreateDbContextController") ?? throw new InvalidOperationException("Connection string 'CreateDbContextController' not found.")));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+        
 
 var connection_string = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connection_string))

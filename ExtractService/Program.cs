@@ -7,7 +7,7 @@ builder.Services.AddHostedService<Worker>();
 
 builder.Services.AddDbContext<CardContext>(
     options => options.UseMySQL(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
+        builder.Configuration.GetConnectionString("DefaultConnection")!,
         x => x.MigrationsAssembly("ExtractService")));
 
 

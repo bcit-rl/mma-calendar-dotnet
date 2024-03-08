@@ -5,7 +5,7 @@ namespace ExtractService;
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
-    private DBFiller _dbFiller;
+    private DBFiller? _dbFiller = null;
     private readonly IServiceProvider _serviceProvider;
     public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider)
     {
@@ -24,13 +24,15 @@ public class Worker : BackgroundService
             using var scope = _serviceProvider.CreateScope();
             var services = scope.ServiceProvider;
             var context = services.GetService<CardContext>();
-            
-            _dbFiller = new DBFiller(context);
-            
-            await _dbFiller.run();
 
-            context.Dispose();
-            await Task.Delay(60000, stoppingToken);
+            if (_dbFiller == null && context != null)
+            {
+                _dbFiller = new DBFiller(context);
+
+                await _dbFiller.run();
+                context.Dispose();
+                await Task.Delay(864000000, stoppingToken);
+            }
         }
     }
 }

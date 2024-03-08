@@ -18,7 +18,7 @@ namespace ExtractService.Models
         private readonly CardContext _context;
         public FighterBuilder(CardContext context)
         {
-            _context = context;
+            _context = CardContext.CreateDbContext([]);
         }   
 
         private void fillFighterStats(ref Fighter fighter, string responseBody){
@@ -101,7 +101,7 @@ namespace ExtractService.Models
             {
                 _context.Fighters.Add(new_fighter);
             }
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
 
             return new_fighter;
         }

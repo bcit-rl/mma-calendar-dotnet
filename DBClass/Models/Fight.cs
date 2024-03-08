@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DBClass.Models
@@ -17,8 +18,8 @@ namespace DBClass.Models
         public DateTime? Date { get; set; }
 
         //Time when fight ended
-        public string? DisplayClock{ get; set;}
-        
+        public string? DisplayClock { get; set; }
+
         //Round the fight ended
         public int? Round { get; set; }
 
@@ -32,18 +33,25 @@ namespace DBClass.Models
         public string? CardSegment { get; set; }
 
         //A or B or Null
-        public string? Winner { get; set;}
-
-        public int? VenueId { get; set; }
-        public Venue? Venue { get; set; }
-
-        public int? FighterAId { get; set; }
-        public Fighter? FighterA { get; set; }
-
-        public int? FighterBId { get; set; }
-        public Fighter? FighterB { get; set; }
+        public string? Winner { get; set; }
 
         public int? EventId { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [ForeignKey("EventId")]
         public Event? Event { get; set; }
+
+
+        public int? FighterAId { get; set; }
+
+        public int? FighterBId { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public ICollection<Fighter>? Fighters { get; set;}
+        public override string ToString()
+        {
+            //return "fds";
+            return $"FightId: {FightId}\nDescription: {Description}\nDate: {Date}\nDisplayClock: {DisplayClock}\nRound: {Round}\nMethod: {Method}\nMethodDescription: {MethodDescription}\nCardSegment: {CardSegment}\nWinner: {Winner}\nFighterAId: {FighterAId}\nFighterBId: {FighterBId}\nEventId: {EventId}";
+        }
     }
 }
