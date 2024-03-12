@@ -52,6 +52,10 @@ namespace ExtractService.Models
                     new_fight.CardSegment = (string?)fightInfo["cardSegment"]!["description"];
                 }
 
+                if (fightInfo["matchNumber"] != null)
+                {
+                    new_fight.MatchNumber = (int?)fightInfo["matchNumber"];
+                }
                 new_fight.Winner = null;
 
                 if (fightInfo["competitors"] != null)
@@ -133,7 +137,7 @@ namespace ExtractService.Models
             //fight_event.Fights.Add(fight);
 
             await _context.SaveChangesAsync();
-            _context.Entry(fight).State = EntityState.Detached;
+            //_context.Entry(fight).State = EntityState.Detached;
 
             return fight;
         }

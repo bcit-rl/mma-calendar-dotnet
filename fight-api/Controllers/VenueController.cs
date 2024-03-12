@@ -44,67 +44,12 @@ namespace fight_api.Controllers
             {
                 return NotFound();
             }
+            AddEventsToVenue(venue);
 
             return venue;
         }
 
-        // PUT: api/Venue/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutVenue(int id, Venue venue)
-        {
-            if (id != venue.VenueId)
-            {
-                return BadRequest();
-            }
 
-            _context.Entry(venue).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VenueExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Venue
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Venue>> PostVenue(Venue venue)
-        {
-            _context.Venues.Add(venue);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetVenue", new { id = venue.VenueId }, venue);
-        }
-
-        // DELETE: api/Venue/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVenue(int id)
-        {
-            var venue = await _context.Venues.FindAsync(id);
-            if (venue == null)
-            {
-                return NotFound();
-            }
-
-            _context.Venues.Remove(venue);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
 
         private bool VenueExists(int id)
         {
@@ -114,8 +59,70 @@ namespace fight_api.Controllers
         private void AddEventsToVenue(Venue venue)
         {
             var stored_events = _context.Events.Where(e => e.VenueId == venue.VenueId).ToList();
+
+            if (venue.Events == null)
+                return;
+            
             venue.Events.Clear();
             venue.Events.AddRange(stored_events);
         }
+
+        // // PUT: api/Venue/5
+        // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // [HttpPut("{id}")]
+        // public async Task<IActionResult> PutVenue(int id, Venue venue)
+        // {
+        //     if (id != venue.VenueId)
+        //     {
+        //         return BadRequest();
+        //     }
+
+        //     _context.Entry(venue).State = EntityState.Modified;
+
+        //     try
+        //     {
+        //         await _context.SaveChangesAsync();
+        //     }
+        //     catch (DbUpdateConcurrencyException)
+        //     {
+        //         if (!VenueExists(id))
+        //         {
+        //             return NotFound();
+        //         }
+        //         else
+        //         {
+        //             throw;
+        //         }
+        //     }
+
+        //     return NoContent();
+        // }
+
+        // // POST: api/Venue
+        // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // [HttpPost]
+        // public async Task<ActionResult<Venue>> PostVenue(Venue venue)
+        // {
+        //     _context.Venues.Add(venue);
+        //     await _context.SaveChangesAsync();
+
+        //     return CreatedAtAction("GetVenue", new { id = venue.VenueId }, venue);
+        // }
+
+        // // DELETE: api/Venue/5
+        // [HttpDelete("{id}")]
+        // public async Task<IActionResult> DeleteVenue(int id)
+        // {
+        //     var venue = await _context.Venues.FindAsync(id);
+        //     if (venue == null)
+        //     {
+        //         return NotFound();
+        //     }
+
+        //     _context.Venues.Remove(venue);
+        //     await _context.SaveChangesAsync();
+
+        //     return NoContent();
+        // }
     }
 }

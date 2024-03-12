@@ -41,10 +41,19 @@ namespace DBClass.Models
         [ForeignKey("EventId")]
         public Event? Event { get; set; }
 
+        public int? MatchNumber {get; set;}
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? FighterAId { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+
         public int? FighterBId { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Fighter? FighterA { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Fighter? FighterB { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ICollection<Fighter>? Fighters { get; set;}

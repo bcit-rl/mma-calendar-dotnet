@@ -10,7 +10,7 @@ using DBClass.Models;
 
 namespace fight_api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]s")]
     [ApiController]
     public class EventController : ControllerBase
     {
@@ -25,10 +25,10 @@ namespace fight_api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Event>>> GetEvent()
         {
-            List<Event> events = await _context.Events.ToListAsync();
+            List<Event> events = await _context.Events.OrderBy(e => e.EventDate).ToListAsync();
             foreach (var e in events)
             {
-                fillEventData(e);
+                partiallyFillEventData(e);
             }
 
             return events;
@@ -45,65 +45,24 @@ namespace fight_api.Controllers
                 return NotFound();
             }
 
+            fillEventData(@event);
+
             return @event;
         }
 
-        // PUT: api/Event/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEvent(int id, Event @event)
+        //GET: api/Events/List
+        //Gets a list of event IDs
+        [HttpGet("List")]
+        public async Task<ActionResult<IEnumerable<int>>> GetEventList()
         {
-            if (id != @event.EventId)
+            List<Event> events = await _context.Events.ToListAsync();
+            List<int> event_ids = new List<int>();
+            foreach (var e in events)
             {
-                return BadRequest();
+                event_ids.Add(e.EventId);
             }
 
-            _context.Entry(@event).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EventExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Event
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Event>> PostEvent(Event @event)
-        {
-            _context.Events.Add(@event);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetEvent", new { id = @event.EventId }, @event);
-        }
-
-        // DELETE: api/Event/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvent(int id)
-        {
-            var @event = await _context.Events.FindAsync(id);
-            if (@event == null)
-            {
-                return NotFound();
-            }
-
-            _context.Events.Remove(@event);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return event_ids;
         }
 
         private bool EventExists(int id)
@@ -113,35 +72,65 @@ namespace fight_api.Controllers
 
 
         /*
-        * Because of how models don't have all references filled
-        * due to navigation issues, we need to fill them out 
-        * manually. This is a helper function to do that.
+        * Fills event data fully. By this I mean each fight and its information is filled out in
+        * the json when returned/
         */
         private void fillEventData(Event unfilled_event)
         {
-            // Fill out the venue
-            unfilled_event.Venue = _context.Venues.Find(unfilled_event.VenueId);
-            if (unfilled_event.Venue != null)
-            {
-                unfilled_event.Venue.Events = null;
-            }
-            
-            // Fill out the fight
+            fillVenueData(unfilled_event);
             fillFightData(unfilled_event);
+        }
 
+        /**
+        * This function is to be used with getting all event data. It will give the event back
+        * except instead of the list of fights it will give a list of fight ids. This prevents
+        * too much information from being given to the user for a single event in a single request
+        */
+        private void partiallyFillEventData(Event unfilled_event)
+        {
+            fillVenueData(unfilled_event);
+            fillFightIDs(unfilled_event);
+        }
+
+        /**
+        * Fills the fight ids for an event. To be used when getting all event data.
+        */
+        private void fillFightIDs(Event event_no_fights)
+        {
+            var stored_fights = _context.Fights.Where(f => f.EventId == event_no_fights.EventId).OrderBy(f => f.MatchNumber).ToList();
+            event_no_fights.FightIdList = new List<int>();
+            foreach (Fight f in stored_fights)
+            {
+                event_no_fights.FightIdList.Add(f.FightId);
+            }
+            event_no_fights.Fights = null;
+        }
+
+        /**
+        * Fills the venue data for an event. This is required as we need to set the event in the
+        * venue to null to prevent a circular reference. This happens because venue's reference
+        * events and events reference venues.
+        */
+        private void fillVenueData(Event event_no_venue)
+        {
+            event_no_venue.Venue = _context.Venues.Find(event_no_venue.VenueId);
+            if (event_no_venue.Venue != null)
+            {
+                event_no_venue.Venue.Events = null;
+            }
         }
 
         private void fillFightData(Event event_no_fights)
         {
-            var stored_fights = _context.Fights.Where(f => f.EventId == event_no_fights.EventId).ToList();
+            var stored_fights = _context.Fights.Where(f => f.EventId == event_no_fights.EventId).OrderBy(f => f.MatchNumber).ToList();
+
+            foreach (Fight fight in stored_fights)
+            {
+                FightController.fillFighterData(fight, _context);
+            }
+
             event_no_fights.Fights = stored_fights;
-
-            // event_no_fights.Fights.Clear();
-            // foreach (Fight f in stored_fights)
-            // {
-            //     event_no_fights.Fights.Add(f);
-            // }
-
         }
+
     }
 }

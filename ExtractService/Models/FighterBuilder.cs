@@ -101,7 +101,7 @@ namespace ExtractService.Models
             {
                 _context.Fighters.Add(new_fighter);
             }
-            //await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             return new_fighter;
         }

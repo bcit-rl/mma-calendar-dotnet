@@ -42,67 +42,68 @@ namespace fight_api.Controllers
             return fighter;
         }
 
-        // PUT: api/Fighter/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutFighter(int id, Fighter fighter)
-        {
-            if (id != fighter.FighterId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(fighter).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FighterExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Fighter
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Fighter>> PostFighter(Fighter fighter)
-        {
-            _context.Fighters.Add(fighter);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetFighter", new { id = fighter.FighterId }, fighter);
-        }
-
-        // DELETE: api/Fighter/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFighter(int id)
-        {
-            var fighter = await _context.Fighters.FindAsync(id);
-            if (fighter == null)
-            {
-                return NotFound();
-            }
-
-            _context.Fighters.Remove(fighter);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
         private bool FighterExists(int id)
         {
             return _context.Fighters.Any(e => e.FighterId == id);
         }
+
+
+        // // PUT: api/Fighter/5
+        // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // [HttpPut("{id}")]
+        // public async Task<IActionResult> PutFighter(int id, Fighter fighter)
+        // {
+        //     if (id != fighter.FighterId)
+        //     {
+        //         return BadRequest();
+        //     }
+
+        //     _context.Entry(fighter).State = EntityState.Modified;
+
+        //     try
+        //     {
+        //         await _context.SaveChangesAsync();
+        //     }
+        //     catch (DbUpdateConcurrencyException)
+        //     {
+        //         if (!FighterExists(id))
+        //         {
+        //             return NotFound();
+        //         }
+        //         else
+        //         {
+        //             throw;
+        //         }
+        //     }
+
+        //     return NoContent();
+        // }
+
+        // // POST: api/Fighter
+        // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // [HttpPost]
+        // public async Task<ActionResult<Fighter>> PostFighter(Fighter fighter)
+        // {
+        //     _context.Fighters.Add(fighter);
+        //     await _context.SaveChangesAsync();
+
+        //     return CreatedAtAction("GetFighter", new { id = fighter.FighterId }, fighter);
+        // }
+
+        // // DELETE: api/Fighter/5
+        // [HttpDelete("{id}")]
+        // public async Task<IActionResult> DeleteFighter(int id)
+        // {
+        //     var fighter = await _context.Fighters.FindAsync(id);
+        //     if (fighter == null)
+        //     {
+        //         return NotFound();
+        //     }
+
+        //     _context.Fighters.Remove(fighter);
+        //     await _context.SaveChangesAsync();
+
+        //     return NoContent();
+        // }
     }
 }

@@ -18,10 +18,14 @@ namespace DBClass.Models
         public DateTime? EventDate { get; set; }
 
         public int? VenueId { get; set; }
-        
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         [ForeignKey("VenueId")]
         public Venue? Venue { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [NotMapped]
+        public List<int>? FightIdList { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ICollection<Fight>? Fights { get; set; }

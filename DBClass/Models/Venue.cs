@@ -22,10 +22,14 @@ namespace DBClass.Models
         
         public override string ToString()
         {
-            for (int i = 0; i < Events.Count; i++)
+            if (Events != null)
             {
-                Console.WriteLine(Events.ElementAt(i));
+                for (int i = 0; i < Events.Count; i++)
+                {
+                    Console.WriteLine(Events.ElementAt(i));
+                }
             }
+
             return $"VenueId: {VenueId}\nName: {Name}\nCity: {City}\nState: {State}\nCountry: {Country}\nIndoor: {Indoor}\n";
         }
     }
