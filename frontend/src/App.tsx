@@ -1,59 +1,42 @@
 import "./App.css";
-import FighterInfo from "./components/FighterInfo";
-import Fight from "./components/Fight";
-import FightCarousel from "./components/FightCarousel";
-import FighterAvatar from "./components/FighterAvatar";
-
-function create_fight_list() {
-  const fight_list = [];
-
-  for (let i = 0; i < 5; i++) {
-    fight_list.push(
-      <Fight
-        date="March 16th"
-        weightClass="Heavyweight"
-        leftFighter={
-          <FighterInfo
-            image={
-              <FighterAvatar
-                src="https://ssl.gstatic.com/onebox/media/sports/photos/ufc/3015_yQaLiQ_96x96.png"
-                Winner={false}
-              />
-            }
-            imageSide={"L"}
-            fighterName={"Tai Tuivasa"}
-            fighterRecord={"15 - 6 - 0 - 0"}
-          />
-        }
-        rightFighter={
-          <FighterInfo
-            image={
-              <FighterAvatar
-                src="https://ssl.gstatic.com/onebox/media/sports/photos/ufc/2753_6Z4w4Q_96x96.png"
-                Winner={true}
-              />
-            }
-            imageSide={"R"}
-            fighterName={"Marcin Tybura"}
-            fighterRecord={"24 - 8 - 0 - 0"}
-          />
-        }
-        description={"Tai Tuivasa wins via KO/TKO"}
-      ></Fight>
-    );
-  }
-  return fight_list;
-}
+import FightWidget from "./components/FightWidget";
+import { createCarousel, createFightCarousel } from "./utils/helpers";
+import { ReactNode, useEffect, useState } from "react";
 
 function App() {
-  const fight_list = [];
-  fight_list.push(create_fight_list());
-  fight_list.push(create_fight_list());
-  fight_list.push(create_fight_list());
+  const [eventList, setEventList] = useState<string[]>([]);
+  const [carouselList, setCarouselList] = useState<ReactNode[]>([]);
+
+  const URL = "http://localhost:5217/api/events";
+  useEffect(() => {
+    const getEventData = async () => {
+      const response = await fetch(URL);
+      const fights = await response.json();
+      const tempCarousel = [];
+      const tempEventList = [];
+      for (let i = 0; i < fights.length; i++) {
+        const currentResult = await fetch(URL + `/${fights[i].eventId}`);
+        const currentEvent = await currentResult.json();
+        const carousel = await createFightCarousel(currentEvent)
+        tempCarousel.push(carousel);
+        tempEventList.push(fights[i].eventName);
+      }
+
+      setEventList(tempEventList);
+      setCarouselList(tempCarousel);
+      
+    };
+
+    getEventData();
+  }, []);
+
   return (
-    <div className="carousel-container">
-      <FightCarousel fightArray={fight_list}></FightCarousel>
-    </div>
+    // <div className="carousel-container">
+      <FightWidget
+        carouselArray={carouselList}
+        eventNames={eventList}
+      ></FightWidget>
+    // {/* </div> */}
   );
 }
 

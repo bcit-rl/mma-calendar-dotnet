@@ -3,13 +3,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import FightTabPanel from "./FightTabPanel";
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
+import { a11yProps } from "../utils/helpers";
 
 interface FightCarouselProps {
   fightArray?: Array<React.ReactNode>;
@@ -41,7 +35,7 @@ const FightCarousel = (props: FightCarouselProps) => {
   }
 
   return (
-    <Box sx={{ width: "50%" }}>
+    <Box>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}

@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 interface Props {
   image?: React.ReactNode;
@@ -11,17 +11,26 @@ const FighterInfo = ({
   image,
   imageSide,
   fighterName,
-  fighterRecord
+  fighterRecord,
 }: Props) => {
-
   return (
-    <Box display="flex" alignContent="center" alignItems="center">
+    <Box
+      display="flex"
+      alignContent="center"
+      alignItems="center"
+      sx={{ marginBottom: "10px", marginTop: "10px" }}
+    >
       {imageSide === "L" && image}
       <Box textAlign={imageSide === "L" ? "start" : "end"}>
-        <p style={{ marginBottom: "5px" }}>{fighterName}</p>
-        <p style={{ color: "Grey", fontSize: "0.8em", marginTop: "5px" }}>
+        <Typography variant="body1" sx={{ marginBottom: "5px" }}>
+          {fighterName}
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{ color: "Grey", fontSize: "0.8em", marginTop: "5px" }}
+        >
           {fighterRecord}
-        </p>
+        </Typography>
       </Box>
       {imageSide === "R" && image}
     </Box>

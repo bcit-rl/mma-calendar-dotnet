@@ -14,7 +14,7 @@ const FighterAvatar = (props: FighterAvatarProps) => {
         height: 55,
         border: 1,
         margin: "0px 15px 0px",
-        borderColor: props.Winner ? "Grey" : "Green",
+        borderColor: props.Winner ? "Green" : "Grey",
       }}
     />
   );
