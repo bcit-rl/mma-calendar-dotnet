@@ -43,14 +43,15 @@ export function createFight(fightData) {
       weightClass={`Weight`}
       leftFighter={leftFighter}
       rightFighter={rightFighter}
-      description={`${fightData.method} ${
+      description={fightData.method ? `${fightData.method} ${
         fightData.methodDescription ? "- " + fightData.methodDescription : ""
-      } :  R${fightData.round} - ${fightData.displayClock} `}
+      } :  R${fightData.round} - ${fightData.displayClock} ` : ""}
     ></Fight>
   );
 }
 
-export async function createFightCarousel(EventData) {
+export async function createFightList(EventUrl:string) {
+  const EventData = await fetch(EventUrl).then( res => res.json())
   const fightList: ReactNode[] = [];
   const mainCard: ReactNode[] = [];
   const prelims: ReactNode[] = [];
@@ -82,7 +83,7 @@ export async function createFightCarousel(EventData) {
     fightList.push(earlyPrelims);
   }
 
-  return <FightCarousel fightArray={fightList}></FightCarousel>;
+  return fightList;
 }
 
 export function createCarousel() {
@@ -132,4 +133,48 @@ export function create_fight_list() {
     );
   }
   return fight_list;
+}
+
+
+export interface IEventData {
+  eventId: number
+  eventName: string
+  shortName: string
+  eventDate: string
+  venueId: number
+  venue: IVenue
+  fightIdList: number[]
+}
+
+export interface IVenue {
+  venueId: number
+  name: string
+  city: string
+  state: string
+  country: string
+  indoor: boolean
+}
+
+
+/**
+ * Binary search algo for finding the date in the array that is closest to today's date
+ * @param nums 
+ * @param target 
+ * @returns 
+ */
+export function binarySearch(nums: IEventData[], target: Date): number {
+  let left: number = 0;
+  let right: number = nums.length - 1;
+  let mid: number = 0
+  target.setHours(0, 0, 0, 0)
+  while (left <= right) {
+    mid = Math.floor((left + right) / 2);
+    const midDate = new Date(nums[mid].eventDate)
+    midDate.setHours(0, 0, 0, 0) 
+    if (midDate === target) return mid;
+    if (target < midDate) right = mid - 1;
+    else left = mid + 1;
+  }
+
+  return mid;
 }

@@ -1,23 +1,28 @@
 import "./App.css";
+import FightCarousel from "./components/FightCarousel";
 import FightWidget from "./components/FightWidget";
-import { createCarousel, createFightCarousel } from "./utils/helpers";
+import { IEventData, binarySearch, createCarousel, createFightCarousel } from "./utils/helpers";
 import { ReactNode, useEffect, useState } from "react";
 
 function App() {
   const [eventList, setEventList] = useState<string[]>([]);
   const [carouselList, setCarouselList] = useState<ReactNode[]>([]);
+  const [eventData, setEventData] = useState<IEventData[]>([])
+  const [eventDataLeftIndex, setLeftIndex] = useState(0);
+  const [eventDataRightIndex, setRightIndex] = useState(0);
 
   const URL = "http://localhost:5217/api/events";
+
   useEffect(() => {
     const getEventData = async () => {
       const response = await fetch(URL);
       const fights = await response.json();
       const tempCarousel = [];
       const tempEventList = [];
+      setEventData(fights)
+      
       for (let i = 0; i < fights.length; i++) {
-        const currentResult = await fetch(URL + `/${fights[i].eventId}`);
-        const currentEvent = await currentResult.json();
-        const carousel = await createFightCarousel(currentEvent)
+        const carousel =  <FightCarousel URL={URL + `/${fights[i].eventId}`}></FightCarousel>
         tempCarousel.push(carousel);
         tempEventList.push(fights[i].eventName);
       }
