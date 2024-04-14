@@ -16,10 +16,13 @@ const Fight = ({
   weightClass,
   description,
 }: Props) => {
+  const formatted_date = new Date(date)
+
+
   return (
     <Container sx={{ border: 1, borderColor: "black"}}>
       <Box>
-        <Typography variant="subtitle2">{date}</Typography>
+        <Typography variant="subtitle2">{`${formatted_date.toLocaleString()}`}</Typography>
         <Typography variant="subtitle1">{weightClass}</Typography>
       </Box>
       <Box display={"flex"} justifyContent={"space-between"}>

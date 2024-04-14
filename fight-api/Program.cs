@@ -15,7 +15,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-        
+
 
 var connection_string = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connection_string))
@@ -26,7 +26,7 @@ builder.Services.AddDbContext<CardContext>(
     options => options.UseMySQL(connection_string)
 );
 
-builder.Services.AddCors(o => o.AddPolicy("HealthPolicy", builder =>
+builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 {
     builder.AllowAnyOrigin()
            .AllowAnyMethod()
@@ -41,6 +41,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 

@@ -3,6 +3,7 @@ import Fight from "../components/Fight";
 import FightCarousel from "../components/FightCarousel";
 import FighterAvatar from "../components/FighterAvatar";
 import FighterInfo from "../components/FighterInfo";
+import { IEventData, IFight } from "./Interfaces";
 const URL = "http://localhost:5217/api/events";
 const FIGHT_URL = "http://localhost:5217/api/Fight";
 
@@ -33,14 +34,13 @@ export function createFighterInfo(fighterData, imageSide) {
   );
 }
 
-export function createFight(fightData) {
+export function createFight(fightData: IFight) {
   const leftFighter = createFighterInfo(fightData.fighterA, "L");
   const rightFighter = createFighterInfo(fightData.fighterB, "R");
-
   return (
     <Fight
       date={`${fightData.date}`}
-      weightClass={`Weight`}
+      weightClass={`${fightData.weightClass}`}
       leftFighter={leftFighter}
       rightFighter={rightFighter}
       description={fightData.method ? `${fightData.method} ${
@@ -60,7 +60,13 @@ export async function createFightList(EventUrl:string) {
   for (const fightData of EventData.fights) {
     const fightDataResponse = await fetch(FIGHT_URL + `/${fightData.fightId}`);
     const fightJSONData = await fightDataResponse.json();
+
+    if(fightJSONData.method == null && new Date(fightJSONData.date) < new Date ){
+      continue
+    }
+
     const fight = await createFight(fightJSONData);
+    
     if (fightJSONData.cardSegment == "Main Card") {
       mainCard.push(fight);
     }
@@ -84,14 +90,6 @@ export async function createFightList(EventUrl:string) {
   }
 
   return fightList;
-}
-
-export function createCarousel() {
-  const fight_list = [];
-  fight_list.push(create_fight_list());
-  fight_list.push(create_fight_list());
-  fight_list.push(create_fight_list());
-  return <FightCarousel fightArray={fight_list}></FightCarousel>;
 }
 
 export function create_fight_list() {
@@ -135,25 +133,6 @@ export function create_fight_list() {
   return fight_list;
 }
 
-
-export interface IEventData {
-  eventId: number
-  eventName: string
-  shortName: string
-  eventDate: string
-  venueId: number
-  venue: IVenue
-  fightIdList: number[]
-}
-
-export interface IVenue {
-  venueId: number
-  name: string
-  city: string
-  state: string
-  country: string
-  indoor: boolean
-}
 
 
 /**

@@ -5,12 +5,8 @@ import { IEventData, binarySearch, createCarousel, createFightCarousel } from ".
 import { ReactNode, useEffect, useState } from "react";
 
 function App() {
-  const [eventList, setEventList] = useState<string[]>([]);
+  const [eventList, setEventList] = useState<IEventData[]>([]);
   const [carouselList, setCarouselList] = useState<ReactNode[]>([]);
-  const [eventData, setEventData] = useState<IEventData[]>([])
-  const [eventDataLeftIndex, setLeftIndex] = useState(0);
-  const [eventDataRightIndex, setRightIndex] = useState(0);
-
   const URL = "http://localhost:5217/api/events";
 
   useEffect(() => {
@@ -19,29 +15,26 @@ function App() {
       const fights = await response.json();
       const tempCarousel = [];
       const tempEventList = [];
-      setEventData(fights)
       
       for (let i = 0; i < fights.length; i++) {
         const carousel =  <FightCarousel URL={URL + `/${fights[i].eventId}`}></FightCarousel>
         tempCarousel.push(carousel);
-        tempEventList.push(fights[i].eventName);
+        tempEventList.push(fights[i]);
       }
-
       setEventList(tempEventList);
       setCarouselList(tempCarousel);
-      
     };
 
     getEventData();
   }, []);
 
   return (
-    // <div className="carousel-container">
+    <div className="carousel-container">
       <FightWidget
         carouselArray={carouselList}
-        eventNames={eventList}
+        eventData={eventList}
       ></FightWidget>
-    // {/* </div> */}
+    </div> 
   );
 }
 

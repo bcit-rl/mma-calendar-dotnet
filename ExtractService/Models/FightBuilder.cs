@@ -52,6 +52,11 @@ namespace ExtractService.Models
                     new_fight.CardSegment = (string?)fightInfo["cardSegment"]!["description"];
                 }
 
+                if (fightInfo["type"] != null)
+                {
+                    new_fight.WeightClass = (string?)fightInfo["type"]["text"];
+                }
+
                 if (fightInfo["matchNumber"] != null)
                 {
                     new_fight.MatchNumber = (int?)fightInfo["matchNumber"];

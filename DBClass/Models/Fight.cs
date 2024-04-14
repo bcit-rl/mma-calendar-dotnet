@@ -16,6 +16,7 @@ namespace DBClass.Models
         public int FightId { get; set; }
         public string? Description { get; set; }
         public DateTime? Date { get; set; }
+        public string? WeightClass { get; set; }
 
         //Time when fight ended
         public string? DisplayClock { get; set; }
@@ -41,7 +42,7 @@ namespace DBClass.Models
         [ForeignKey("EventId")]
         public Event? Event { get; set; }
 
-        public int? MatchNumber {get; set;}
+        public int? MatchNumber { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? FighterAId { get; set; }
@@ -56,7 +57,7 @@ namespace DBClass.Models
         public Fighter? FighterB { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public ICollection<Fighter>? Fighters { get; set;}
+        public ICollection<Fighter>? Fighters { get; set; }
         public override string ToString()
         {
             //return "fds";

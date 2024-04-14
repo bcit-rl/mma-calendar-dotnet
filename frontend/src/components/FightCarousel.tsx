@@ -10,6 +10,8 @@ interface FightCarouselProps {
   URL: string;
 }
 
+const cache : {[key:string] : React.ReactNode[]} = {}
+
 const FightCarousel = (props: FightCarouselProps) => {
   const [value, setValue] = React.useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -27,15 +29,20 @@ const FightCarousel = (props: FightCarouselProps) => {
 
   useEffect(() => {
     const FillFightData = async () => {
+      if(cache[props.URL]){
+        setFights(cache[props.URL])
+        return
+      }
+
       const fight_list = await createFightList(props.URL);
       const tempFightList: React.ReactNode[] = [];
-
       if (fight_list) {
         for (let i = 0; i < fight_list.length; i++) {
           tempFightList.push(fight_list[i]);
         }
         setFights(tempFightList);
       }
+      cache[props.URL] = tempFightList
     };
     FillFightData();
   }, []);
