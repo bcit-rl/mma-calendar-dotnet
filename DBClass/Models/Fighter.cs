@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DBClass.Models
@@ -16,14 +18,27 @@ namespace DBClass.Models
         public int? Weight { get; set; }
         public int? Height { get; set; }
         public int? Age { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [NotMapped]
+        public bool? Winner { get; set; } = false;
+
         public string? Gender { get; set; }
         public string? Citizenship { get; set; }
         public string? Headshot { get; set; }
         public int? Wins { get; set; }
         public int? Losses { get; set; }
         public int? Draws { get; set; }
-        public int?  NoContests { get; set; }
+        public int? NoContests { get; set; }
         public string? LeftStance { get; set; }
         public string? RightStance { get; set; }
+
+        public override string ToString()
+        {
+            return $"FighterId: {FighterId}\nFirstName: {FirstName}\nLastName: {LastName}\nNickName: {NickName}\n" +
+                   $"Weight: {Weight}\nHeight: {Height}\nAge: {Age}\nGender: {Gender}\nCitizenship: {Citizenship}\n" +
+                   $"Headshot: {Headshot}\nWins: {Wins}\nLosses: {Losses}\nDraws: {Draws}\nNoContests: {NoContests}\n" +
+                   $"LeftStance: {LeftStance}\nRightStance: {RightStance}";
+        }
     }
 }

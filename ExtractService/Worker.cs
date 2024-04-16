@@ -5,10 +5,12 @@ namespace ExtractService;
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
-    private readonly DBFiller _dbFiller = new DBFiller();
-    public Worker(ILogger<Worker> logger)
+    private DBFiller? _dbFiller = null;
+    private readonly IServiceProvider _serviceProvider;
+    public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider)
     {
         _logger = logger;
+        _serviceProvider = serviceProvider;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -19,10 +21,18 @@ public class Worker : BackgroundService
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             }
-            
-            _dbFiller.run();
+            using var scope = _serviceProvider.CreateScope();
+            var services = scope.ServiceProvider;
+            var context = services.GetService<CardContext>();
 
-            await Task.Delay(60000, stoppingToken);
+            if (_dbFiller == null && context != null)
+            {
+                _dbFiller = new DBFiller(context);
+
+                await _dbFiller.run();
+                context.Dispose();
+                await Task.Delay(864000000, stoppingToken);
+            }
         }
     }
 }
