@@ -1,10 +1,8 @@
 import { ReactNode } from "react";
 import Fight from "../components/Fight";
-import FightCarousel from "../components/FightCarousel";
 import FighterAvatar from "../components/FighterAvatar";
 import FighterInfo from "../components/FighterInfo";
-import { IEventData, IFight } from "./Interfaces";
-const URL = "http://localhost:5217/api/events";
+import { IEventData, IFight, IFighter } from "./Interfaces";
 const FIGHT_URL = "http://localhost:5217/api/Fight";
 
 export function a11yProps(index: number) {
@@ -14,9 +12,7 @@ export function a11yProps(index: number) {
   };
 }
 
-export function createWidget() {}
-
-export function createFighterInfo(fighterData, imageSide) {
+export function createFighterInfo(fighterData: IFighter, imageSide: string) {
   return (
     <FighterInfo
       image={
@@ -34,24 +30,81 @@ export function createFighterInfo(fighterData, imageSide) {
   );
 }
 
+export function createDateString(date: Date) {
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const monthAbbreviations = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const hours = date.getHours() % 12 == 0 ? 12 : date.getHours() % 12;
+  const minutes =
+  date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+  const timeString =
+    date.getHours() >= 12
+      ? `${hours}:${minutes} p.M.`
+      : `${hours}:${minutes} a.M.`;
+
+
+  return `${daysOfWeek[date.getDay()]} ${
+    monthAbbreviations[date.getMonth()]
+  } ${date.getDate()}, ${timeString}`;
+}
+
+/**
+ * Given fightData creates a Fight Component
+ *
+ * @param fightData
+ * @returns Fight component with data filled out
+ */
 export function createFight(fightData: IFight) {
-  const leftFighter = createFighterInfo(fightData.fighterA, "L");
-  const rightFighter = createFighterInfo(fightData.fighterB, "R");
+  const leftFighter: ReactNode = createFighterInfo(fightData.fighterA, "L");
+  const rightFighter: ReactNode = createFighterInfo(fightData.fighterB, "R");
+  const componentKey: string = `${fightData.fighterA.fighterId}-${fightData.fighterB.fighterId}`;
+
   return (
     <Fight
-      date={`${fightData.date}`}
+      key={componentKey}
+      date={`${fightData.date}Z`}
       weightClass={`${fightData.weightClass}`}
       leftFighter={leftFighter}
       rightFighter={rightFighter}
-      description={fightData.method ? `${fightData.method} ${
-        fightData.methodDescription ? "- " + fightData.methodDescription : ""
-      } :  R${fightData.round} - ${fightData.displayClock} ` : ""}
+      description={
+        fightData.method
+          ? `${fightData.method} ${
+              fightData.methodDescription
+                ? "- " + fightData.methodDescription
+                : ""
+            } :  R${fightData.round} - ${fightData.displayClock} `
+          : ""
+      }
     ></Fight>
   );
 }
 
-export async function createFightList(EventUrl:string) {
-  const EventData = await fetch(EventUrl).then( res => res.json())
+/**
+ * Creates the list of fights to be put in an event. The data is obtained through a GET request
+ * from the requested URL. The list of fights is a 2d array structured like so
+ *
+ * [[Main Card Fights], [Prelim Card Fights], [Early Prelim fights]]
+ *
+ * If there are no prelim/early prelim fights, they will not be added. Inside the arrays
+ * are Fight components
+ *
+ * @param EventUrl URL to the API that has the data
+ * @returns 2d array where the inner arrays are ReactNode[]
+ */
+export async function createFightList(EventUrl: string) {
+  const EventData = await fetch(EventUrl).then((res) => res.json());
   const fightList: ReactNode[] = [];
   const mainCard: ReactNode[] = [];
   const prelims: ReactNode[] = [];
@@ -61,12 +114,15 @@ export async function createFightList(EventUrl:string) {
     const fightDataResponse = await fetch(FIGHT_URL + `/${fightData.fightId}`);
     const fightJSONData = await fightDataResponse.json();
 
-    if(fightJSONData.method == null && new Date(fightJSONData.date) < new Date ){
-      continue
+    if (
+      fightJSONData.method == null &&
+      new Date(fightJSONData.date) < new Date()
+    ) {
+      continue;
     }
 
     const fight = await createFight(fightJSONData);
-    
+
     if (fightJSONData.cardSegment == "Main Card") {
       mainCard.push(fight);
     }
@@ -92,64 +148,21 @@ export async function createFightList(EventUrl:string) {
   return fightList;
 }
 
-export function create_fight_list() {
-  const fight_list = [];
-
-  for (let i = 0; i < 5; i++) {
-    fight_list.push(
-      <Fight
-        date="March 16th"
-        weightClass="Heavyweight"
-        leftFighter={
-          <FighterInfo
-            image={
-              <FighterAvatar
-                src="https://ssl.gstatic.com/onebox/media/sports/photos/ufc/3015_yQaLiQ_96x96.png"
-                Winner={false}
-              />
-            }
-            imageSide={"L"}
-            fighterName={"Tai Tuivasa"}
-            fighterRecord={"15 - 6 - 0 - 0"}
-          />
-        }
-        rightFighter={
-          <FighterInfo
-            image={
-              <FighterAvatar
-                src="https://ssl.gstatic.com/onebox/media/sports/photos/ufc/2753_6Z4w4Q_96x96.png"
-                Winner={true}
-              />
-            }
-            imageSide={"R"}
-            fighterName={"Marcin Tybura"}
-            fighterRecord={"24 - 8 - 0 - 0"}
-          />
-        }
-        description={"Tai Tuivasa wins via KO/TKO"}
-      ></Fight>
-    );
-  }
-  return fight_list;
-}
-
-
-
 /**
  * Binary search algo for finding the date in the array that is closest to today's date
- * @param nums 
- * @param target 
- * @returns 
+ * @param nums
+ * @param target
+ * @returns Number that is the index in nums where the closest date is.
  */
 export function binarySearch(nums: IEventData[], target: Date): number {
   let left: number = 0;
   let right: number = nums.length - 1;
-  let mid: number = 0
-  target.setHours(0, 0, 0, 0)
+  let mid: number = 0;
+  target.setHours(0, 0, 0, 0);
   while (left <= right) {
     mid = Math.floor((left + right) / 2);
-    const midDate = new Date(nums[mid].eventDate)
-    midDate.setHours(0, 0, 0, 0) 
+    const midDate = new Date(nums[mid].eventDate);
+    midDate.setHours(0, 0, 0, 0);
     if (midDate === target) return mid;
     if (target < midDate) right = mid - 1;
     else left = mid + 1;

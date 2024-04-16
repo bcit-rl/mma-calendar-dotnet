@@ -1,7 +1,8 @@
 import { Box, Typography } from "@mui/material";
+import {ReactNode} from "react";
 
 interface Props {
-  image?: React.ReactNode;
+  image?: ReactNode;
   imageSide: string;
   fighterName: string;
   fighterRecord: string;

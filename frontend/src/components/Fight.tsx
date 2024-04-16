@@ -1,5 +1,6 @@
 import { Box, Container, Typography } from "@mui/material";
 import { ReactNode } from "react";
+import { createDateString } from "../utils/helpers";
 
 interface Props {
   leftFighter: ReactNode;
@@ -16,13 +17,12 @@ const Fight = ({
   weightClass,
   description,
 }: Props) => {
-  const formatted_date = new Date(date)
-
+  const dateInstance = new Date(date)
 
   return (
     <Container sx={{ border: 1, borderColor: "black"}}>
       <Box>
-        <Typography variant="subtitle2">{`${formatted_date.toLocaleString()}`}</Typography>
+        <Typography variant="subtitle2">{`${createDateString(dateInstance)}`}</Typography>
         <Typography variant="subtitle1">{weightClass}</Typography>
       </Box>
       <Box display={"flex"} justifyContent={"space-between"}>

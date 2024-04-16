@@ -4,22 +4,22 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import FightTabPanel from "./FightTabPanel";
 import { a11yProps, createFightList } from "../utils/helpers";
-import { useState, useEffect } from "react";
+import { useState, useEffect,ReactNode, SyntheticEvent } from "react";
 
 interface FightCarouselProps {
   URL: string;
 }
 
-const cache : {[key:string] : React.ReactNode[]} = {}
+const cache : {[key:string] : ReactNode[]} = {}
 
 const FightCarousel = (props: FightCarouselProps) => {
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const [value, setValue] = useState(0);
+  const handleChange = (event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const [fightsList, setFights] = useState<React.ReactNode[]>([]);
-  const tabLists: React.ReactNode[] = [];
-  const tabPanel: React.ReactNode[] = [];
+  const [fightsList, setFights] = useState<ReactNode[]>([]);
+  const tabLists: ReactNode[] = [];
+  const tabPanel: ReactNode[] = [];
 
   const cardSegments: readonly [string, string, string] = [
     "Main Card",
@@ -35,7 +35,7 @@ const FightCarousel = (props: FightCarouselProps) => {
       }
 
       const fight_list = await createFightList(props.URL);
-      const tempFightList: React.ReactNode[] = [];
+      const tempFightList: ReactNode[] = [];
       if (fight_list) {
         for (let i = 0; i < fight_list.length; i++) {
           tempFightList.push(fight_list[i]);
@@ -48,9 +48,9 @@ const FightCarousel = (props: FightCarouselProps) => {
   }, []);
 
   for (let i = 0; i < fightsList.length; i++) {
-    tabLists.push(<Tab label={cardSegments[i]} {...a11yProps(i)} />);
+    tabLists.push(<Tab key={`CarouselTab-${i}`} label={cardSegments[i]} {...a11yProps(i)} />);
     tabPanel.push(
-      <FightTabPanel value={value} index={i}>
+      <FightTabPanel key={`CarouselTabPanel-${i}`}value={value} index={i}>
         {fightsList[i]}
       </FightTabPanel>
     );

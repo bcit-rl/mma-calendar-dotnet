@@ -1,30 +1,37 @@
 import { Box, Tab, Tabs } from "@mui/material";
-import React, { useEffect } from "react";
-import { IEventData, a11yProps, binarySearch } from "../utils/helpers";
+import { ReactNode, useState, SyntheticEvent } from "react";
+import { IEventData } from "../utils/Interfaces";
+import { a11yProps, binarySearch } from "../utils/helpers";
 import FightWidgetTabPanel from "./FightWidgetTabPanel";
 
 interface FightWidgetProps {
-  carouselArray?: Array<React.ReactNode>;
+  carouselArray?: Array<ReactNode>;
   eventData: Array<IEventData>;
 }
 
 const FightWidget = (props: FightWidgetProps) => {
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const [value, setValue] = useState(binarySearch(props.eventData, new Date()));
+  const handleChange = (event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const tabList: Array<React.ReactNode> = [];
-  const tabPanels: Array<React.ReactNode> = [];
-  
-  // useEffect(() => {
-  //   setValue(binarySearch(props.eventData, new Date))
-  // }, [props.eventData]);
+  const tabList: Array<ReactNode> = [];
+  const tabPanels: Array<ReactNode> = [];
 
   if (props.carouselArray && props.eventData) {
     for (let i = 0; i < props.carouselArray.length; i++) {
-      tabList.push(<Tab label={props.eventData[i].eventName} {...a11yProps(i)} />);
+      tabList.push(
+        <Tab
+          key={`FightWidgetTab-${i}`}
+          label={props.eventData[i].eventName}
+          {...a11yProps(i)}
+        />
+      );
       tabPanels.push(
-        <FightWidgetTabPanel value={value} index={i}>
+        <FightWidgetTabPanel
+          key={`FightWidgetTabPanel-${i}`}
+          value={value}
+          index={i}
+        >
           {props.carouselArray[i]}
         </FightWidgetTabPanel>
       );
@@ -32,12 +39,13 @@ const FightWidget = (props: FightWidgetProps) => {
   }
 
   return (
-    <Box sx={{ minWidth:500, maxWidth: 800 }}>
+    <Box sx={{ minWidth: 500, maxWidth: 800 }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}
           onChange={handleChange}
           variant="scrollable"
+          scrollButtons={true}
           aria-label="basic tabs example"
         >
           {tabList}

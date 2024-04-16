@@ -1,7 +1,7 @@
 import "./App.css";
 import FightCarousel from "./components/FightCarousel";
 import FightWidget from "./components/FightWidget";
-import { IEventData, binarySearch, createCarousel, createFightCarousel } from "./utils/helpers";
+import { IEventData } from "./utils/Interfaces";
 import { ReactNode, useEffect, useState } from "react";
 
 function App() {
@@ -15,9 +15,11 @@ function App() {
       const fights = await response.json();
       const tempCarousel = [];
       const tempEventList = [];
-      
+
       for (let i = 0; i < fights.length; i++) {
-        const carousel =  <FightCarousel URL={URL + `/${fights[i].eventId}`}></FightCarousel>
+        const carousel = (
+          <FightCarousel URL={URL + `/${fights[i].eventId}`}></FightCarousel>
+        );
         tempCarousel.push(carousel);
         tempEventList.push(fights[i]);
       }
@@ -30,11 +32,13 @@ function App() {
 
   return (
     <div className="carousel-container">
-      <FightWidget
-        carouselArray={carouselList}
-        eventData={eventList}
-      ></FightWidget>
-    </div> 
+      {eventList.length !== 0 && (
+        <FightWidget
+          carouselArray={carouselList}
+          eventData={eventList}
+        ></FightWidget>
+      )}
+    </div>
   );
 }
 
