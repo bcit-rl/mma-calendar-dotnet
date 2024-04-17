@@ -71,6 +71,9 @@ namespace ExtractService.Data.Migrations
                     b.Property<int?>("FighterBId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("MatchNumber")
+                        .HasColumnType("int");
+
                     b.Property<string>("Method")
                         .HasColumnType("longtext");
 
@@ -80,12 +83,19 @@ namespace ExtractService.Data.Migrations
                     b.Property<int?>("Round")
                         .HasColumnType("int");
 
+                    b.Property<string>("WeightClass")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Winner")
                         .HasColumnType("longtext");
 
                     b.HasKey("FightId");
 
                     b.HasIndex("EventId");
+
+                    b.HasIndex("FighterAId");
+
+                    b.HasIndex("FighterBId");
 
                     b.ToTable("Fights", (string)null);
                 });
@@ -192,7 +202,19 @@ namespace ExtractService.Data.Migrations
                         .WithMany("Fights")
                         .HasForeignKey("EventId");
 
+                    b.HasOne("DBClass.Models.Fighter", "FighterA")
+                        .WithMany()
+                        .HasForeignKey("FighterAId");
+
+                    b.HasOne("DBClass.Models.Fighter", "FighterB")
+                        .WithMany()
+                        .HasForeignKey("FighterBId");
+
                     b.Navigation("Event");
+
+                    b.Navigation("FighterA");
+
+                    b.Navigation("FighterB");
                 });
 
             modelBuilder.Entity("DBClass.Models.Fighter", b =>
