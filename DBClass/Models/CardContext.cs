@@ -23,7 +23,7 @@ namespace DBClass.Models
         public static CardContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<CardContext>();
-            optionsBuilder.UseMySQL("Server=localhost;Port=3333;User ID=root;Password=secret;Database=mma_calendar");
+            optionsBuilder.UseMySQL("Server=db;Port=3306;User ID=root;Password=secret;Database=mma_calendar");
 
             return new CardContext(optionsBuilder.Options);
         }
@@ -34,7 +34,7 @@ namespace DBClass.Models
         public static CardContext CreateDbContextController(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<CardContext>();
-            optionsBuilder.UseSqlServer("Server=localhost;Port=3333;User ID=root;Password=secret;Database=mma_calendar");
+            optionsBuilder.UseSqlServer("Server=db;Port=3306;User ID=root;Password=secret;Database=mma_calendar");
 
             return new CardContext(optionsBuilder.Options);
         }

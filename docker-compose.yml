@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: mma_calendar
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+
+  extract-service:
+    build:
+      context: .
+      dockerfile: extract.Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=mma_calendar;User=root;Password=secret;
+      
+  web:
+    build: 
+      context: .
+      dockerfile: API.Dockerfile
+    ports:
+      - "5217:8080"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=mma_calendar;User=root;Password=secret;

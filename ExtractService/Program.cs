@@ -13,4 +13,11 @@ builder.Services.AddDbContext<CardContext>(
 
 
 var host = builder.Build();
+
+using (var scope = host.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<CardContext>();
+    db.Database.Migrate();
+}
+
 host.Run();

@@ -34,6 +34,13 @@ namespace fight_api.Controllers
             return events;
         }
 
+                // GET: api/Event/
+        [HttpGet("hi")]
+        public async Task<ActionResult<string>> GetEventHi()
+        {
+            return "hi";
+        }
+
         // GET: api/Event/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Event>> GetEvent(int id)
