@@ -1,0 +1,1 @@
+export const BASEURL:string = "http://64.23.226.7/"; 

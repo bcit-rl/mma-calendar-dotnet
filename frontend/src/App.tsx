@@ -3,11 +3,12 @@ import FightCarousel from "./components/FightCarousel";
 import FightWidget from "./components/FightWidget";
 import { IEventData } from "./utils/Interfaces";
 import { ReactNode, useEffect, useState } from "react";
+import { BASEURL } from "./utils/global_constants";
 
 function App() {
   const [eventList, setEventList] = useState<IEventData[]>([]);
   const [carouselList, setCarouselList] = useState<ReactNode[]>([]);
-  const URL = "http://localhost:5217/api/events";
+  const URL = BASEURL + "api/events";
 
   useEffect(() => {
     const getEventData = async () => {

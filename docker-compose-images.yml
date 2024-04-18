@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: rcle/mma-calendar:db
+    restart: always
+    environment:
+      MYSQL_DATABASE: mma_calendar
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+
+  extract-service:
+    image: rcle/mma-calendar:v1.0extract
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=mma_calendar;User=root;Password=secret;
+      
+  web:
+    image: rcle/mma-calendar:v1.0web
+    ports:
+      - "5217:8080"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=mma_calendar;User=root;Password=secret;

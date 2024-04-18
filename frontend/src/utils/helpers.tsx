@@ -3,7 +3,8 @@ import Fight from "../components/Fight";
 import FighterAvatar from "../components/FighterAvatar";
 import FighterInfo from "../components/FighterInfo";
 import { IEventData, IFight, IFighter } from "./Interfaces";
-const FIGHT_URL = "http://localhost:5217/api/Fight";
+import { BASEURL } from "./global_constants";
+const FIGHT_URL = BASEURL + "api/Fight";
 
 export function a11yProps(index: number) {
   return {
