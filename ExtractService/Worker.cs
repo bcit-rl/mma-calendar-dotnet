@@ -30,6 +30,8 @@ public class Worker : BackgroundService
                 _dbFiller = new DBFiller(context);
 
                 await _dbFiller.run();
+                await _dbFiller.fillFightRecords();
+                Console.WriteLine("Finished adding records");
                 context.Dispose();
                 await Task.Delay(864000000, stoppingToken);
             }
