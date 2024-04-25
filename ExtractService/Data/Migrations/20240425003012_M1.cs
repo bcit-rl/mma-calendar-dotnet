@@ -16,6 +16,25 @@ namespace ExtractService.Data.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "FightHistory",
+                columns: table => new
+                {
+                    FighterId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Opponent = table.Column<string>(type: "longtext", nullable: true),
+                    Result = table.Column<string>(type: "longtext", nullable: true),
+                    Method = table.Column<string>(type: "longtext", nullable: true),
+                    Round = table.Column<string>(type: "longtext", nullable: true),
+                    Time = table.Column<string>(type: "longtext", nullable: true),
+                    Event = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FightHistory", x => new { x.FighterId, x.Date });
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Venues",
                 columns: table => new
                 {
@@ -56,35 +75,6 @@ namespace ExtractService.Data.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Fights",
-                columns: table => new
-                {
-                    FightId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Description = table.Column<string>(type: "longtext", nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    DisplayClock = table.Column<string>(type: "longtext", nullable: true),
-                    Round = table.Column<int>(type: "int", nullable: true),
-                    Method = table.Column<string>(type: "longtext", nullable: true),
-                    MethodDescription = table.Column<string>(type: "longtext", nullable: true),
-                    CardSegment = table.Column<string>(type: "longtext", nullable: true),
-                    Winner = table.Column<string>(type: "longtext", nullable: true),
-                    EventId = table.Column<int>(type: "int", nullable: true),
-                    FighterAId = table.Column<int>(type: "int", nullable: true),
-                    FighterBId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Fights", x => x.FightId);
-                    table.ForeignKey(
-                        name: "FK_Fights_Events_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Events",
-                        principalColumn: "EventId");
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Fighters",
                 columns: table => new
                 {
@@ -110,11 +100,47 @@ namespace ExtractService.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Fighters", x => x.FighterId);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Fights",
+                columns: table => new
+                {
+                    FightId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Description = table.Column<string>(type: "longtext", nullable: true),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    WeightClass = table.Column<string>(type: "longtext", nullable: true),
+                    DisplayClock = table.Column<string>(type: "longtext", nullable: true),
+                    Round = table.Column<int>(type: "int", nullable: true),
+                    Method = table.Column<string>(type: "longtext", nullable: true),
+                    MethodDescription = table.Column<string>(type: "longtext", nullable: true),
+                    CardSegment = table.Column<string>(type: "longtext", nullable: true),
+                    Winner = table.Column<string>(type: "longtext", nullable: true),
+                    EventId = table.Column<int>(type: "int", nullable: true),
+                    MatchNumber = table.Column<int>(type: "int", nullable: true),
+                    FighterAId = table.Column<int>(type: "int", nullable: true),
+                    FighterBId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Fights", x => x.FightId);
                     table.ForeignKey(
-                        name: "FK_Fighters_Fights_FightId",
-                        column: x => x.FightId,
-                        principalTable: "Fights",
-                        principalColumn: "FightId");
+                        name: "FK_Fights_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "EventId");
+                    table.ForeignKey(
+                        name: "FK_Fights_Fighters_FighterAId",
+                        column: x => x.FighterAId,
+                        principalTable: "Fighters",
+                        principalColumn: "FighterId");
+                    table.ForeignKey(
+                        name: "FK_Fights_Fighters_FighterBId",
+                        column: x => x.FighterBId,
+                        principalTable: "Fighters",
+                        principalColumn: "FighterId");
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -132,13 +158,41 @@ namespace ExtractService.Data.Migrations
                 name: "IX_Fights_EventId",
                 table: "Fights",
                 column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Fights_FighterAId",
+                table: "Fights",
+                column: "FighterAId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Fights_FighterBId",
+                table: "Fights",
+                column: "FighterBId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Fighters_Fights_FightId",
+                table: "Fighters",
+                column: "FightId",
+                principalTable: "Fights",
+                principalColumn: "FightId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Events_Venues_VenueId",
+                table: "Events");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Fighters_Fights_FightId",
+                table: "Fighters");
+
             migrationBuilder.DropTable(
-                name: "Fighters");
+                name: "FightHistory");
+
+            migrationBuilder.DropTable(
+                name: "Venues");
 
             migrationBuilder.DropTable(
                 name: "Fights");
@@ -147,7 +201,7 @@ namespace ExtractService.Data.Migrations
                 name: "Events");
 
             migrationBuilder.DropTable(
-                name: "Venues");
+                name: "Fighters");
         }
     }
 }

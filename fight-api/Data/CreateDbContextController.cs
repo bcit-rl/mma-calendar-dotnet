@@ -18,5 +18,6 @@ namespace CardContextFactory
         public DbSet<DBClass.Models.Event> Event { get; set; } = default!;
         public DbSet<DBClass.Models.Fight> Fight { get; set; } = default!;
         public DbSet<DBClass.Models.Fighter> Fighter { get; set; } = default!;
+        public DbSet<DBClass.Models.FightHistory> FightHistory { get; set; } = default!;
     }
 }

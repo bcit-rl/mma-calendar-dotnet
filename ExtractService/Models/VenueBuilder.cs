@@ -72,7 +72,6 @@ namespace ExtractService.Models
             {
                 _context.Venues.Add(venue);
             }
-            //await _context.SaveChangesAsync();
 
             venue = _context.Entry(venue).Entity;
 

@@ -62,9 +62,9 @@ namespace fight_api.Controllers
             fight.FighterBId = null;
 
             if (fight.Winner != null){
-                if (fight.Winner == "A"){
+                if (fight.Winner == "A" && fight.FighterA != null){
                     fight.FighterA.Winner = true;
-                }else{
+                }else if (fight.Winner == "B" && fight.FighterB != null){
                     fight.FighterB.Winner = true;
                 }
             }

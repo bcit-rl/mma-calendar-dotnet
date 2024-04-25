@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Data.Common;
 using Microsoft.CodeAnalysis.Elfie.Serialization;
+using HtmlAgilityPack;
 
 
 namespace ExtractService.Models
@@ -22,7 +23,10 @@ namespace ExtractService.Models
         private readonly EventBuilder _eventBuilder;
         private readonly FightBuilder _fightBuilder;
         private readonly VenueBuilder _venueBuilder;
+        private readonly FightHistoryBuilder _fightHistoryBuilder;
         private readonly CardContext _context;
+        
+        private readonly string _FIGHT_RECORD_URL = @"https://www.espn.com/mma/fighter/history/_/id/";
 
         //private readonly string _url = "https://sports.core.api.espn.com/v2/sports/mma/leagues/ufc/calendar/ondays?lang=en&region=us";
 
@@ -34,6 +38,7 @@ namespace ExtractService.Models
             _eventBuilder = new EventBuilder(context);
             _fightBuilder = new FightBuilder(context);
             _fighterBuilder = new FighterBuilder(context);
+            _fightHistoryBuilder = new FightHistoryBuilder();
         }
 
         public async Task run()
@@ -65,6 +70,47 @@ namespace ExtractService.Models
 
 
             Console.WriteLine("Done");
+        }
+
+        public async Task fillFightRecords()
+        {
+            List<Fighter> fighters = _context.Fighters.ToList();
+            foreach (Fighter fighter in fighters)
+            {
+                Console.WriteLine($"Getting fight record for {fighter.FirstName} {fighter.LastName}");
+                await getFightRecord(fighter.FighterId);
+            }
+        }
+
+        private async Task getFightRecord(int fighterId)
+        {
+
+            HtmlWeb web = new HtmlWeb();
+
+            var htmlDoc = web.Load($"{_FIGHT_RECORD_URL}{fighterId}");
+
+            var node = htmlDoc.DocumentNode.SelectNodes("//tr");
+            if (node == null)
+            {
+                return;
+            }
+            for(int index = 1 ; index < node.Count; index++)
+            {   
+                var childNodes = node[index].ChildNodes;
+
+                string dateString = HtmlEntity.DeEntitize(childNodes[0].InnerText);
+                DateTime date = DateTime.Parse(dateString);
+                string opponent = HtmlEntity.DeEntitize(childNodes[1].InnerText);
+                string result = HtmlEntity.DeEntitize(childNodes[2].InnerText);
+                string method = HtmlEntity.DeEntitize(childNodes[3].InnerText);
+                string round = HtmlEntity.DeEntitize(childNodes[4].InnerText);
+                string time =  HtmlEntity.DeEntitize(childNodes[5].InnerText);
+                string eventName = HtmlEntity.DeEntitize(childNodes[6].InnerText);
+
+                FightHistory fighterHistory = new FightHistory(fighterId, date, opponent, result, method, round, time, eventName);
+                await _fightHistoryBuilder.saveFightHistory(fighterHistory);
+            }
+
         }
 
         public async Task addEvent(string event_url)

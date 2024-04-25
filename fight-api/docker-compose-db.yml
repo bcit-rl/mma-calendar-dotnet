@@ -1,0 +1,10 @@
+services:
+  db:
+    image: mariadb
+    ports:
+      - "3333:3306"
+    environment:
+      MYSQL_DATABASE: mma_calendar
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret

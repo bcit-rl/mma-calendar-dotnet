@@ -106,10 +106,7 @@ namespace ExtractService.Models
                     }
                 }
 
-                // new_fight.VenueId = fight_event.EventLocationId;
-                //new_fight.Venue = fight_event.EventLocation;
                 new_fight.EventId = fight_event.EventId;
-                //new_fight.Event = fight_event;
 
             }
             catch (HttpRequestException e)
@@ -139,10 +136,8 @@ namespace ExtractService.Models
             {
                 _context.Fights.Add(fight);
             }
-            //fight_event.Fights.Add(fight);
 
             await _context.SaveChangesAsync();
-            //_context.Entry(fight).State = EntityState.Detached;
 
             return fight;
         }

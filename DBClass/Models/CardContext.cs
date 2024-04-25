@@ -18,6 +18,8 @@ namespace DBClass.Models
         public DbSet<Event> Events{ get; set; } 
 
         public DbSet<Fight> Fights { get; set; }
+
+        public DbSet<FightHistory> FightHistories { get; set; }
         
 
         public static CardContext CreateDbContext(string[] args)
@@ -49,6 +51,8 @@ namespace DBClass.Models
                 .ToTable("Events");
             modelBuilder.Entity<Fight>()
                 .ToTable("Fights");
+            modelBuilder.Entity<FightHistory>()
+                .ToTable("FightHistory");
         }
     }
 }
