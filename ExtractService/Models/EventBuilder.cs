@@ -34,13 +34,12 @@ namespace ExtractService.Models
                 new_event.ShortName = (string?)eventInfo["shortName"];
                 if (eventInfo["date"] != null)
                 {
-                    new_event.EventDate = DateTime.Parse((string)eventInfo["date"], null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    new_event.EventDate = DateTime.Parse((string)eventInfo["date"]!, null, System.Globalization.DateTimeStyles.RoundtripKind);
                 }
-                if (eventInfo["venues"] != null)
+                if (eventInfo["venues"] != null && eventInfo["venues"]![0] != null && eventInfo["venues"]![0]!["$ref"] != null)
                 {
-                    Venue new_venue = await _venueBuilder.createVenue((string?)eventInfo["venues"][0]["$ref"]);
+                    Venue new_venue = await _venueBuilder.createVenue((string)eventInfo["venues"]![0]!["$ref"]!);
                     new_event.VenueId = new_venue.VenueId;
-                    //new_event.Venue = new_venue;
                 }
             }
             catch (HttpRequestException e)

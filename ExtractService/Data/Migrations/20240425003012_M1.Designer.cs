@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExtractService.Data.Migrations
 {
     [DbContext(typeof(CardContext))]
-    [Migration("20240424223745_M1")]
+    [Migration("20240425003012_M1")]
     partial class M1
     {
         /// <inheritdoc />
@@ -108,8 +108,8 @@ namespace ExtractService.Data.Migrations
                     b.Property<int>("FighterId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Date")
-                        .HasColumnType("varchar(255)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Event")
                         .HasColumnType("longtext");

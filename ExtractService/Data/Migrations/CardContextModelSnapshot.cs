@@ -105,8 +105,8 @@ namespace ExtractService.Data.Migrations
                     b.Property<int>("FighterId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Date")
-                        .HasColumnType("varchar(255)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Event")
                         .HasColumnType("longtext");

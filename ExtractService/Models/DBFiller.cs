@@ -90,11 +90,16 @@ namespace ExtractService.Models
             var htmlDoc = web.Load($"{_FIGHT_RECORD_URL}{fighterId}");
 
             var node = htmlDoc.DocumentNode.SelectNodes("//tr");
+            if (node == null)
+            {
+                return;
+            }
             for(int index = 1 ; index < node.Count; index++)
             {   
                 var childNodes = node[index].ChildNodes;
 
-                string date = HtmlEntity.DeEntitize(childNodes[0].InnerText);
+                string dateString = HtmlEntity.DeEntitize(childNodes[0].InnerText);
+                DateTime date = DateTime.Parse(dateString);
                 string opponent = HtmlEntity.DeEntitize(childNodes[1].InnerText);
                 string result = HtmlEntity.DeEntitize(childNodes[2].InnerText);
                 string method = HtmlEntity.DeEntitize(childNodes[3].InnerText);

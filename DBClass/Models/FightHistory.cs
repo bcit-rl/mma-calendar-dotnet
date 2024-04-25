@@ -12,7 +12,7 @@ namespace DBClass.Models
     public class FightHistory
     {
         public int FighterId { get; set; }
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
 
         public string? Opponent { get; set; }
 
@@ -25,7 +25,7 @@ namespace DBClass.Models
         public string? Time { get; set; }
         public string? Event { get; set; }
 
-        public FightHistory(int fighterId, string date, string? opponent, string? result, string? method , string? round, string? time, string? @event)
+        public FightHistory(int fighterId, DateTime date, string? opponent, string? result, string? method , string? round, string? time, string? @event)
         {
             FighterId = fighterId;
             Date = date;

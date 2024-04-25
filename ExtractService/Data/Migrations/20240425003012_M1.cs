@@ -20,7 +20,7 @@ namespace ExtractService.Data.Migrations
                 columns: table => new
                 {
                     FighterId = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Opponent = table.Column<string>(type: "longtext", nullable: true),
                     Result = table.Column<string>(type: "longtext", nullable: true),
                     Method = table.Column<string>(type: "longtext", nullable: true),
