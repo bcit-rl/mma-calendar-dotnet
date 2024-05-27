@@ -64,7 +64,7 @@ namespace ExtractService.Models
 
             foreach (string event_url in event_urls)
             {
-                Console.WriteLine("adding event ");
+                Console.WriteLine("adding event " + event_url);
                 await addEvent(event_url);
             }
 

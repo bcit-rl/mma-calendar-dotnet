@@ -36,7 +36,7 @@ namespace ExtractService.Models
                 {
                     new_event.EventDate = DateTime.Parse((string)eventInfo["date"]!, null, System.Globalization.DateTimeStyles.RoundtripKind);
                 }
-                if (eventInfo["venues"] != null && eventInfo["venues"]![0] != null && eventInfo["venues"]![0]!["$ref"] != null)
+                if (eventInfo["venues"] != null && eventInfo["venues"].Count() > 0 && eventInfo["venues"]![0] != null && eventInfo["venues"]![0]!["$ref"] != null)
                 {
                     Venue new_venue = await _venueBuilder.createVenue((string)eventInfo["venues"]![0]!["$ref"]!);
                     new_event.VenueId = new_venue.VenueId;
